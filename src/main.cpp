@@ -19,7 +19,7 @@ int main(int argc, char * args[])
 	freopen("CON", "w", stdout);
 
 
-	TheGame::Instance()->init("SDLEngine 0.24", 100, 100, 800, 600, false);
+	TheGame::Instance()->init("SDLEngine 0.24", 100, 100, Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, false);
 
 	while (TheGame::Instance()->isRunning())
 	{

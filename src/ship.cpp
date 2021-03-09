@@ -1,4 +1,6 @@
 #include "ship.h"
+
+#include "CollisionManager.h"
 #include "glm/gtx/string_cast.hpp"
 #include "PlayScene.h"
 #include "TextureManager.h"
@@ -21,6 +23,8 @@ Ship::Ship() : m_maxSpeed(10.0f)
 	m_currentHeading = 0.0f; // current facing angle
 	m_currentDirection = glm::vec2(1.0f, 0.0f); // facing right
 	m_turnRate = 5.0f; // 5 degrees per frame
+	m_LOSDistance = 400.0f; // 5 ppf x 80feet
+	m_LOSColour = glm::vec4(1, 0, 0, 1);
 }
 
 
@@ -35,13 +39,15 @@ void Ship::draw()
 
 	// draw the ship
 	TextureManager::Instance()->draw("ship", x, y, m_currentHeading, 255, true);
+
+	// draw LOS
+	Util::DrawLine(getTransform()->position, getTransform()->position + getCurrentDirection() * m_LOSDistance, m_LOSColour);
 }
 
 
 void Ship::update()
 {
-	/*move();
-	m_checkBounds();*/
+
 }
 
 void Ship::clean()
@@ -100,6 +106,21 @@ float Ship::getMaxSpeed() const
 	return m_maxSpeed;
 }
 
+float Ship::getLOSDistance() const
+{
+	return m_LOSDistance;
+}
+
+bool Ship::hasLOS() const
+{
+	return m_hasLOS;
+}
+
+float Ship::getCurrentHeading() const
+{
+	return m_currentHeading;
+}
+
 void Ship::setTargetPosition(glm::vec2 newPosition)
 {
 	m_targetPosition = newPosition;
@@ -116,6 +137,27 @@ void Ship::setMaxSpeed(float newSpeed)
 	m_maxSpeed = newSpeed;
 }
 
+void Ship::setLOSDistance(const float distance)
+{
+	m_LOSDistance = distance;
+}
+
+void Ship::setHasLOS(const bool state)
+{
+	m_hasLOS = state;
+	m_LOSColour = (m_hasLOS) ? glm::vec4(0, 1, 0, 1) : glm::vec4(1, 0, 0, 1);
+}
+
+void Ship::setCurrentHeading(const float heading)
+{
+	m_currentHeading = heading;
+	m_changeDirection();
+}
+
+bool Ship::checkLOS(std::vector<DisplayObject*> objects, DisplayObject* target)
+{
+	return CollisionManager::LOSCheck(getTransform()->position, getTransform()->position + getCurrentDirection() * m_LOSDistance, objects, target);
+}
 
 
 void Ship::m_checkBounds()

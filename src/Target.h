@@ -3,9 +3,9 @@
 #define __TARGET__
 
 
-#include "NavigationObject.h"
+#include "DisplayObject.h"
 
-class Target final : public NavigationObject
+class Target final : public DisplayObject
 {
 public:
 	Target();
